@@ -26,5 +26,8 @@ include_directories(${SFML_INCLUDE_DIR})
 find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_PATH})
 
+find_package(PNG REQUIRED)
+include_directories(${PNG_INCLUDE_DIR})
+
 add_subdirectory(src) 
 

@@ -1,7 +1,38 @@
 #version 150
+
 in vec3 in_Position;
+in vec3 in_Translation;
+in float in_ZRotation;
+//in vec2 in_TextCord;
+
+uniform mat4 in_ProjectionMatrix;
+//uniform sampler2D in_Texture;
 
 void main(void)
 {
-   gl_Position = vec4(in_Position.xyz,1);
+   float ZRotation = radians(in_ZRotation);
+
+   vec4 position = vec4(in_Position,1);
+
+
+   mat4 rotationMatrix = mat4(
+                            cos(ZRotation), sin(ZRotation), 0 ,0,
+                            -sin(ZRotation), cos(ZRotation), 0 ,0,
+                            0, 0, 1 ,0,
+                            0, 0, 0 ,1
+                         );
+
+ //  position = rotationMatrix * position;
+
+
+   mat4 translationMatrix = mat4(
+                               1,0,0,0,
+                               0,1,0,0,
+                               0,0,1,0,
+                               in_Translation.x,in_Translation.y,in_Translation.z,1);
+
+
+  // position = translationMatrix * position;
+
+   gl_Position = in_ProjectionMatrix * position;
 }

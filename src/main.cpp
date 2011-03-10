@@ -3,12 +3,31 @@
 #include <SFML/Window.hpp>
 #include <string>
 #include "util/util.h"
+#include "util/glStuff.h"
+#include "util/matrix.h"
+
+struct inputData
+{
+   float position[3];
+   float translation[3];
+   float rotation;
+   float textcord[2];
+};
+
+inline
+void * offset(int floatNum)
+{
+   return (void *)( sizeof(float) * floatNum);
+}
+
 
 using std::cout;
 using std::endl;
 
 int main(int argv, char **argc)
 {
+   printf("The size of it is %d, with offset at %ld, %ld and %ld\n",(int)sizeof(inputData),(long)offset(0),(long )offset(3),(long) offset(6));
+
 
    sf::Window App(sf::VideoMode(800, 600, 32), "SFML OpenGL");
    App.SetFramerateLimit(60);
@@ -25,31 +44,89 @@ int main(int argv, char **argc)
    GLuint vertShader = createShader("../res/vert", GL_VERTEX_SHADER);
    GLuint fragShader = createShader("../res/frag", GL_FRAGMENT_SHADER);
    GLuint program = createProgram(vertShader,fragShader);
+
+   unsigned int buffers[2];
    
-   glUseProgram(program);
+   glGenBuffers(2,buffers);
    checkGLError();
 
-   unsigned int buffers[1];
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,buffers[1]);
+   checkGLError();
+
+   short indexes[60] = {};
+
+   for (int l = 0; l < 60; l++)
+   {
+      int b  = l % 6;
+
+      if (b < 3)
+         indexes[l] = b;
+
+      else
+         indexes[l] = b -2;
+      //printf("The number at %d at %d in %d\n",l,b,indexes[l]);
+   }
+
    
-   glGenBuffers(1,buffers);
+
+
+   glBufferData(GL_ELEMENT_ARRAY_BUFFER,60 * sizeof(short),indexes,GL_STATIC_DRAW);
    checkGLError();
 
    glBindBuffer(GL_ARRAY_BUFFER,buffers[0]);
    checkGLError();
 
-   glBufferData(GL_ARRAY_BUFFER,40 * 3 * sizeof(float),NULL,GL_STREAM_DRAW);
+   glBufferData(GL_ARRAY_BUFFER,40 * sizeof(inputData),NULL,GL_STREAM_DRAW);
    checkGLError();
 
-   glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof (GLfloat) * 2,0);
+   glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof (inputData) ,offset(0));
+   checkGLError();
+   glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof (inputData) ,offset(3));
+   checkGLError();
+   glVertexAttribPointer(2,1,GL_FLOAT,GL_FALSE,sizeof (inputData) ,offset(6));
+   checkGLError();
+   glVertexAttribPointer(3,2,GL_FLOAT,GL_FALSE,sizeof (inputData) ,offset(7));
    checkGLError();
 
    glEnableVertexAttribArray(0);
+   checkGLError();
+   glEnableVertexAttribArray(1);
+   checkGLError();
+   glEnableVertexAttribArray(2);
+   checkGLError();
+   glEnableVertexAttribArray(3);
    checkGLError();
 
    glBindAttribLocation(program,0,"in_Position");
    checkGLError();
 
-   float vertexes[40 * 3];
+   glBindAttribLocation(program,1,"in_Translation");
+   checkGLError();
+
+   glBindAttribLocation(program,2,"in_ZRotation");
+   checkGLError();
+
+   glBindAttribLocation(program,3,"in_TextCord");
+   checkGLError();
+
+   activateProgram(program);
+
+   int perspectiveposition = glGetUniformLocation(program,"in_ProjectionMatrix");
+   checkGLError();
+
+   float matrix[16];
+   makeOrtho(0,100,100,0,-5,5,matrix);
+
+   glUniformMatrix4fv(perspectiveposition,1,false,matrix);
+   checkGLError();
+
+   int texturePosition = glGetUniformLocation(program,"in_Texture");
+   checkGLError();
+
+   glUniform1i(texturePosition,0);
+
+
+   inputData vertexes[40];
 
    //THEIR CODE BELOW______
 
@@ -60,13 +137,9 @@ int main(int argv, char **argc)
    //glEnable(GL_DEPTH_TEST);
    //glDepthMask(GL_TRUE);
 
-   // Setup a perspective projection
-   //glMatrixMode(GL_PROJECTION);
-   //glLoadIdentity();
-   //gluPerspective(90.f, 1.f, 1.f, 500.f);
-
    long theTime = getNano();
    int frames = 0;
+   double rotation = 0;
 
 
    while (App.IsOpened())
@@ -108,24 +181,58 @@ int main(int argv, char **argc)
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
+      vertexes = {};
+
       int i = 0;
+      rotation++;
 
-      vertexes[i++] = .4;
-      vertexes[i++] = 0;
-      vertexes[i++] = 0;
 
-      vertexes[i++] = .8;
-      vertexes[i++] = 0;
-      vertexes[i++] = 0;
+      vertexes[i].textcord[0] = 0;
+      vertexes[i].textcord[1] = 0;
+      vertexes[i].translation[0] = 70;
+      vertexes[i].translation[1] = 70;
+      vertexes[i].translation[2] = 0;
+      vertexes[i].position[0] = -10;
+      vertexes[i].position[1] = -10;
+      vertexes[i].position[2] = 0;
+      vertexes[i++].rotation = rotation;
 
-      vertexes[i++] = .2;
-      vertexes[i++] = 0;
-      vertexes[i++] = 0;
+      vertexes[i].textcord[0] = 0;
+      vertexes[i].textcord[1] = 1;
+      vertexes[i].translation[0] = 70;
+      vertexes[i].translation[1] = 70;
+      vertexes[i].translation[2] = 0;
+      vertexes[i].position[0] = -10;
+      vertexes[i].position[1] = 10;
+      vertexes[i].position[2] = 0;
+      vertexes[i++].rotation = rotation;
 
-      glBufferSubData(GL_ARRAY_BUFFER,0, 40 * 3 * sizeof(float),vertexes);
+      vertexes[i].textcord[0] = 1;
+      vertexes[i].textcord[1] = 0;
+      vertexes[i].translation[0] = 70;
+      vertexes[i].translation[1] = 70;
+      vertexes[i].translation[2] = 0;
+      vertexes[i].position[0] = 10;
+      vertexes[i].position[1] = -10;
+      vertexes[i].position[2] = 0;
+      vertexes[i++].rotation = rotation;
+
+      vertexes[i].textcord[0] = 1;
+      vertexes[i].textcord[1] = 1;
+      vertexes[i].translation[0] = 70;
+      vertexes[i].translation[1] = 70;
+      vertexes[i].translation[2] = 0;
+      vertexes[i].position[0] = 10;
+      vertexes[i].position[1] = 10;
+      vertexes[i].position[2] = 0;
+      vertexes[i++].rotation = rotation;
+
+      glBufferSubData(GL_ARRAY_BUFFER,0, 40 * sizeof(inputData),vertexes);
       checkGLError();
 
-      glDrawArrays(GL_TRIANGLES,0,i);
+      glPointSize(20);
+      glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_SHORT,0);
+
       checkGLError();
 
       App.Display();
