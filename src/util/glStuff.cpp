@@ -1,4 +1,5 @@
 #include "util.h"
+#include <boost/scoped_ptr.hpp>
 #include <png.h>
 #include "glStuff.h"
 
@@ -226,4 +227,58 @@ void loadTexture(int target, const std::string &filename)
       exit(1);
    }
 
+   png_init_io(png_ptr,theFile);
+   png_set_sig_bytes(png_ptr,8);
+
+   png_read_info(png_ptr,info_ptr);
+   int width = png_get_image_width(png_ptr,info_ptr);
+   int height = png_get_image_width(png_ptr,info_ptr);
+   int depth = png_get_bit_depth(png_ptr,info_ptr);
+   int rowbytes = png_get_rowbytes(png_ptr, info_ptr);
+
+   boost::scoped_ptr<png_byte> image_data(new png_byte[rowbytes * height]);
+
+   png_bytep *row_pointers = new png_bytep [height];
+   for (int i = 0; i < height; ++i)
+           row_pointers[i] = image_data.get() + i * rowbytes;
+
+
+   printf("I have read the image with width %d, height %d, depth %d, rowbytes %d\n",width,height,depth,rowbytes);
+
+   png_read_image(png_ptr,row_pointers);
+
+   png_read_end(png_ptr,NULL);
+   png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
+
+   
+   /*
+   for (int i = 0;i < height;i++)
+   {
+      for (int b = 0; b< width * 4;b++)
+      {
+         printf("%3d ",(int) image_data.get()[i * rowbytes + b]);
+         if (b%4 == 3)
+            putchar('\t');
+      }
+      putchar('\n');
+   }
+   */
+   
+  
+
+   glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,width,height,0,GL_RGBA,GL_UNSIGNED_BYTE,image_data.get());
+   checkGLError();
+
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+   checkGLError();
+
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+   checkGLError();
+
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+   checkGLError();
+
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+   checkGLError();
+   
 }

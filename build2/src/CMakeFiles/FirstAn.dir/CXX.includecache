@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/ethan/Programming/FirstAn/src/main.cpp
+GL/glew.h
+-
+iostream
+-
+SFML/Window.hpp
+-
+string
+-
+util/util.h
+/home/ethan/Programming/FirstAn/src/util/util.h
+util/text.h
+/home/ethan/Programming/FirstAn/src/util/text.h
+util/glStuff.h
+/home/ethan/Programming/FirstAn/src/util/glStuff.h
+util/matrix.h
+/home/ethan/Programming/FirstAn/src/util/matrix.h
+
+/home/ethan/Programming/FirstAn/src/util/glStuff.h
+
+/home/ethan/Programming/FirstAn/src/util/matrix.h
+
+/home/ethan/Programming/FirstAn/src/util/text.h
+
+/home/ethan/Programming/FirstAn/src/util/util.h
+string
+-
+

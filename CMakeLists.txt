@@ -29,5 +29,8 @@ include_directories(${GLEW_INCLUDE_PATH})
 find_package(PNG REQUIRED)
 include_directories(${PNG_INCLUDE_DIR})
 
+find_package(Freetype)
+include_directories(${FREETYPE_INCLUDE_DIRS})
+
 add_subdirectory(src) 
 

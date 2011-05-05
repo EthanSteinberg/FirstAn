@@ -7,7 +7,7 @@ void makeOrtho(float left, float right, float top, float bottom, float near, flo
    float ty = (top + bottom)/(top - bottom);
    float tz = (far + near)/(far - near);
 
-   memset(matrix, 0,16);
+//   memset(matrix, 0,16);
 
    matrix[0] = 2.0/(right - left);
    matrix[5] = 2.0/(top - bottom);

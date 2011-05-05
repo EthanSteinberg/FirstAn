@@ -1,8 +1,12 @@
 #version 150
 
+in vec2 mid_TextCord;
+
+uniform sampler2D in_Texture;
+
 out vec4 FragColor;
 
 void main(void)
 {
-   FragColor = vec4(0,0,1,1);
+   FragColor = texture(in_Texture,mid_TextCord);
 }

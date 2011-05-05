@@ -1,0 +1,2 @@
+/usr/bin/ar cr ../../arch/libutil.a  CMakeFiles/util.dir/util.cpp.o CMakeFiles/util.dir/matrix.cpp.o CMakeFiles/util.dir/glStuff.cpp.o CMakeFiles/util.dir/text.cpp.o CMakeFiles/util.dir/myVector2.cpp.o CMakeFiles/util.dir/algoMaxRects.cpp.o CMakeFiles/util.dir/myBox.cpp.o
+/usr/bin/ranlib ../../arch/libutil.a

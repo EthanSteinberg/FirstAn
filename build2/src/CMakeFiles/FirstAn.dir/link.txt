@@ -1,0 +1,1 @@
+/usr/bin/c++   -Wall -march=native -std=c++0x  -g -O0 -Wshadow -lGL -lGLU -lrt   CMakeFiles/FirstAn.dir/main.cpp.o  -o ../FirstAn -rdynamic -lsfml-system -lsfml-audio -lsfml-graphics -lsfml-network -lsfml-window ../arch/libutil.a -lpng -lz -lGLEW -lfreetype 
